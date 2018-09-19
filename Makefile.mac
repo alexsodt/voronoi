@@ -1,0 +1,43 @@
+CC = g++
+CC2 = gcc
+F77 = gfortran
+
+QHULL = -I qhull-2011.1/src/libqhull
+
+LDFLAGS = 
+
+.C.o: 
+	$(CC) $(GSLINC) -o $*.o -c -g $*.C
+
+.c.o:
+	$(CC2) $(QHULL) $(COPT) $(CDEFN)	-c	$*.c
+
+.f.o:
+	$(F77) -O3 -c $*.f -o $*.o
+
+EXECS = voronoi postprocess zeroseq
+
+all: $(EXECS)
+
+clean: 
+	rm -f lapack.a blas.a
+	rm  *.o $(LAPACKOBJS) $(BLASOBJS) $(EXECS)
+	rm -f qhull-2011.1/lib/libqhullstatic.a
+	cd qhull-2011.1 ; make clean
+	cd qhull-2011.1/build ; make clean
+
+qhull-2011.1/lib/libqhullstatic.a:
+	cd qhull-2011.1/build ; cmake .. ; cd .. ; make lib/libqhullstatic.a
+
+
+voronoi: voronoi.o util.o dcd.o alignSet.o pdb.o  dovoronoi.o surfacesPS.o qhull-2011.1/lib/libqhullstatic.a geometry.o 
+	$(CC) $(LDFLAGS) -o voronoi voronoi.o util.o dcd.o alignSet.o pdb.o dovoronoi.o surfacesPS.o geometry.o qhull-2011.1/lib/libqhullstatic.a -framework vecLib
+
+postprocess: postprocess.o util.o binary.h
+	$(CC) $(LDFLAGS) -o postprocess postprocess.o util.o
+
+zeroseq: zeroseq.o util.o
+	$(CC) $(LDFLAGS) -o zeroseq zeroseq.o util.o
+
+postprocess.o : binary.h
+voronoi.o : binary.h

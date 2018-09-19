@@ -1,0 +1,5 @@
+*.o
+*.a
+voronoi
+postprocess
+zeroseq
