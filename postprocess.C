@@ -59,7 +59,7 @@ int main ( int argc, char **argv )
 			exit(1);
 		}
 	}
-	printf("cutoff: %lf\n", cutoff );
+//	printf("cutoff: %lf\n", cutoff );
 	FILE *theFile = fopen( argv[1], "rb" );
 
 	if( !theFile )
@@ -120,6 +120,71 @@ int main ( int argc, char **argv )
 	memset( cur_op, 0, sizeof(double) * nind );	
 
 	binaryElement *wholeTraj = NULL;
+	
+	int pos = ftell(theFile);
+
+	double *areas = (double *)malloc( sizeof(double) * 10000 );
+	double *areas2 = (double *)malloc( sizeof(double) * 10000 );
+	double *narea = (double *)malloc( sizeof(double) * 10000 );
+	char *names[100];
+	for( int t = 0; t < 100; t++ )
+		names[t] = NULL;
+	memset( areas, 0, sizeof(double) * 10000 );
+	memset( areas2, 0, sizeof(double) * 10000 );
+	memset( narea, 0, sizeof(double) * 10000 );
+
+	
+	
+	for( int f = 0; f < nframes; f++)
+	{
+		int formatCheck = 0;
+		int nr = fread( &formatCheck, sizeof(int), 1, theFile );
+		wholeTraj = (binaryElement *)malloc( sizeof(binaryElement) * (nframes * nind) );
+		nr = fread( wholeTraj+nind*f, sizeof(binaryElement), nind, theFile );
+		
+		for( int x = 0; x < nind; x++ )
+		{
+			int type = wholeTraj[nind*f+x].type;
+	
+			if( !names[type] ) 
+			{
+				names[type] = (char *)malloc( sizeof(char) * ( 1 +strlen(desc[x].resname) ) );
+				strcpy( names[type], desc[x].resname );
+			}
+	
+			double val = wholeTraj[nind*f+x].area;
+
+			areas[type] += val;
+			areas2[type] += val*val;
+			narea[type] += 1;
+
+//			areas[wholeTraj[nind*f+x].type] += 
+//			printf("%s %lf %d\n", desc[x].resname, 
+//					    wholeTraj[nind*f+x].area, desc[x], wholeTraj[nind*f+x].type  ); 
+		}
+		
+
+		if( nr != nind )
+		{
+			printf("Failed to read frame '%d/%d' (counting from 1).\n", f+1, nframes );
+			return 0;
+		}
+		free(wholeTraj);
+	}
+
+	for( int type = 0; type < 100; type++ )
+	{
+		if( names[type] && narea[type] > 0 )
+		{
+			double av = areas[type]/narea[type];
+			double av2 = areas2[type]/narea[type];
+			double std = sqrt(av2-av*av);
+
+			printf("%s area %lf stdev %lf\n", names[type], av, std );
+		}
+	}
+
+	fseek( theFile, pos, SEEK_SET );
 
 	if( do_forward_backward )
 	{
@@ -558,7 +623,7 @@ int main ( int argc, char **argv )
 			}
 		}
 	}
-
+/*
 	printf("OP HISTOGRAM\n");
 	for( int b = 0; b < N_OP_BINS; b++ )
 	{
@@ -569,7 +634,7 @@ int main ( int argc, char **argv )
 	{
 		printf("%d %lf\n", b, cl_hist[b] );
 	}
-	
+*/	
 
 #if 0
 	for( int x = 0; x < nind; x++ )

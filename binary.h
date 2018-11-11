@@ -29,6 +29,7 @@ struct binaryElement
 	float borderLen[MAX_BORDERS];
 	float borderTheta[MAX_BORDERS];
 	short borderID[MAX_BORDERS];
+	double area;
 };
 
 

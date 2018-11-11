@@ -82,6 +82,10 @@ void setColor( double *color, int seqn )
 int nChains( char *resname )
 {
 	if( !strcasecmp( resname, "PSM") ) return 2;
+	if( !strcasecmp( resname, "LSM") ) return 2;
+	if( !strcasecmp( resname, "NSM") ) return 2;
+	if( !strcasecmp( resname, "PLAS") ) return 2;
+	if( !strcasecmp( resname, "PLPC") ) return 2;
 	if( !strncasecmp( resname, "CHL", 3 ) ) return 1;
 
 	if( strlen( resname ) == 4 )
@@ -90,14 +94,17 @@ int nChains( char *resname )
 
 		int isPC = !strncasecmp( resname + 2, "PC",2 );
 		int isPE = !strncasecmp( resname + 2, "PE",2 );
-	
+		int isPS = !strncasecmp( resname + 2, "PS",2 );
+
 		int isDi = resname[0] == 'D';
 
 		int isOleoyl = resname[1] == 'O';
 
 		int isPalm = resname[1] == 'P';
+		
+		int isStear = resname[0] == 'S';
 
-		if( (isPC || isPE) && (isDi || isOleoyl || isPalm ) )
+		if( (isPC || isPE || isPS) && (isDi || isOleoyl || isPalm || isStear ) )
 			return 2;
 	}
 	return 0; // not a lipid.
@@ -896,7 +903,9 @@ int main( int argc, char **argv )
 				}			
 			}
 						
-			writeFrame( leaflet_pos, nleaflet,  colors, f, "hi", La, Lb, psFile, leaflet_type, ( f == psForFrame), borders, nborders, borderLens, borderThetas, NULL, NULL, scolors, ncolor, color_cut, orderp, orderPMin, orderPMax, chlAtCode, orderPOut  ); 
+			double *areas = (double *)malloc( sizeof(double) * nleaflet );
+			memset( areas, 0, sizeof(double) * nleaflet );
+			writeFrame( leaflet_pos, nleaflet,  colors, f, "hi", La, Lb, psFile, leaflet_type, ( f == psForFrame), borders, nborders, borderLens, borderThetas, NULL, areas, scolors, ncolor, color_cut, orderp, orderPMin, orderPMax, chlAtCode, orderPOut  ); 
 	
 			if( binary ) 
 			{
@@ -914,6 +923,7 @@ int main( int argc, char **argv )
 					elem.type = inds[i].type;
 					elem.op = orderPOut[off];
 					elem.nborders = nborders[off];
+					elem.area = areas[off];
 					for( int b = 0; b < nborders[off]; b++ )
 					{
 						elem.borderLen[b] = borderLens[off*nleaflet+b];
@@ -924,6 +934,7 @@ int main( int argc, char **argv )
 				}
 				fflush(binary);
 			}
+			free(areas);
 			
 			for( int a = 0; a < curNAtoms(); a++ )
 				at[a].zap();
