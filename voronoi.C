@@ -86,6 +86,19 @@ int nChains( char *resname )
 	if( !strcasecmp( resname, "NSM") ) return 2;
 	if( !strcasecmp( resname, "PLAS") ) return 2;
 	if( !strcasecmp( resname, "PLPC") ) return 2;
+	if( !strcasecmp( resname, "DPPC") ) return 2;
+	if( !strcasecmp( resname, "POPE") ) return 2;
+	if( !strcasecmp( resname, "POPC") ) return 2;
+	if( !strcasecmp( resname, "SOPC") ) return 2;
+	if( !strcasecmp( resname, "OAPE") ) return 2;
+	if( !strcasecmp( resname, "OAPS") ) return 2;
+	if( !strcasecmp( resname, "PAPC") ) return 2;
+	if( !strcasecmp( resname, "PAPS") ) return 2;
+	if( !strcasecmp( resname, "PDPE") ) return 2;
+	if( !strcasecmp( resname, "PLAO") ) return 2;
+	if( !strcasecmp( resname, "PLQS") ) return 2;
+	if( !strcasecmp( resname, "SAPS") ) return 2;
+	if( !strcasecmp( resname, "SAPI") ) return 2;
 	if( !strncasecmp( resname, "CHL", 3 ) ) return 1;
 
 	if( strlen( resname ) == 4 )
@@ -116,7 +129,7 @@ int whichChain (char *resName, char *atomName )
 		
 	int sl = strlen(atomName)-1;
 
-	if( !strcasecmp( resName, "PSM" ) )
+	if( !strcasecmp( resName, "PSM" ) || !strcasecmp( resName, "NSM" ) || !strcasecmp( resName, "LSM" ) )
 	{
 		if( atomName[sl] == 'S' ) return 0;	
 		if( atomName[sl] == 'F' ) return 1;	
