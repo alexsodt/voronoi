@@ -154,9 +154,10 @@ int main ( int argc, char **argv )
 	
 			double val = wholeTraj[nind*f+x].area;
 
-			areas[type] += val;
-			areas2[type] += val*val;
-			narea[type] += 1;
+
+			areas[type*2+desc[x].chain] += val;
+			areas2[type*2+desc[x].chain] += val*val;
+			narea[type*2+desc[x].chain] += 1;
 
 //			areas[wholeTraj[nind*f+x].type] += 
 //			printf("%s %lf %d\n", desc[x].resname, 
@@ -174,14 +175,24 @@ int main ( int argc, char **argv )
 
 	for( int type = 0; type < 100; type++ )
 	{
-		if( names[type] && narea[type] > 0 )
+		if( names[type] && narea[2*type] > 0 )
 		{
-			double av = areas[type]/narea[type];
-			double av2 = areas2[type]/narea[type];
+			double av = areas[2*type]/narea[2*type];
+			double av2 = areas2[2*type]/narea[2*type];
 			double std = sqrt(av2-av*av);
+		
+			if( narea[2*type+1] > 0 )
+			{
+				double av_2 = areas[2*type+1]/narea[2*type+1];
+				double av2_2 = areas2[2*type+1]/narea[2*type+1];
+				double std_2 = sqrt(av2_2-av_2*av_2);
+				printf("%s area1 %lf stdev1 %lf area2 %lf stdev2 %lf\n", names[type], av, std, av_2, std_2 );
+			}
+			else
+				printf("%s area %lf stdev %lf area2 N/A stdev2 N/A\n", names[type], av, std );
 
-			printf("%s area %lf stdev %lf\n", names[type], av, std );
 		}
+			
 	}
 
 	fseek( theFile, pos, SEEK_SET );
