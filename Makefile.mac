@@ -31,7 +31,7 @@ qhull-2011.1/lib/libqhullstatic.a:
 
 
 voronoi: voronoi.o util.o dcd.o alignSet.o pdb.o  dovoronoi.o surfacesPS.o qhull-2011.1/lib/libqhullstatic.a geometry.o 
-	$(CC) $(LDFLAGS) -o voronoi voronoi.o util.o dcd.o alignSet.o pdb.o dovoronoi.o surfacesPS.o geometry.o qhull-2011.1/lib/libqhullstatic.a -framework vecLib
+	$(CC) $(LDFLAGS) -o voronoi voronoi.o util.o dcd.o alignSet.o pdb.o dovoronoi.o surfacesPS.o geometry.o qhull-2011.1/lib/libqhullstatic.a -framework Accelerate
 
 postprocess: postprocess.o util.o binary.h
 	$(CC) $(LDFLAGS) -o postprocess postprocess.o util.o
